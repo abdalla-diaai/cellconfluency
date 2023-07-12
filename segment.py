@@ -54,7 +54,8 @@ def img_layer(img_orig, img_segm):
 ###########################################################
 # Argument parser
 p = argparse.ArgumentParser(description='segmentation')
-p.add_argument('-i', action='store', dest='inp', type=str, 
+# to take more than on argument in the command line
+p.add_argument('-i', action='store', dest='inp', type=str, nargs='+',
                required=True, help='input image path')
 p.add_argument('-o', action='store', dest='outp', type=str, 
                help='output image path')
@@ -66,30 +67,31 @@ p.add_argument('-test', action='store', dest='test', type=str,
                help='layered image path')
 args = p.parse_args()
 ############################################################      
+# iterating through command-line arguments with try except
+try:
+    for _ in img_name:
+        img_load = cv2.imread(_, 0)
+        win_size = 10
 
-img_name = args.inp
-out_name = args.outp
-thr_val = args.thr
-
-#### loading image, bluring window size
-img_load = cv2.imread(img_name, 0)
-win_size = 10
-
-sigma, sigma_thr = stddev_thresh(img_load, win_size, thr_val)
-sigma_mask, img_masked = clust_mask(img_load, sigma_thr, size=100)
-sigma_layered = img_layer(img_load, sigma_mask)
+        sigma, sigma_thr = stddev_thresh(img_load, win_size, thr_val)
+        sigma_mask, img_masked = clust_mask(img_load, sigma_thr, size=100)
+        sigma_layered = img_layer(img_load, sigma_mask)
 
 
-if args.outp:
-	cv2.imwrite(out_name, sigma_mask)
+        if args.outp:
+            cv2.imwrite(out_name, sigma_mask)
 
-if args.test:
-    cv2.imwrite(args.test, sigma_layered)
+        if args.test:
+            cv2.imwrite(args.test, sigma_layered)
 
-if args.area:
-	# counts the ratio of white pixels
-    total = np.sum(sigma_mask)/255.
-    ratio = np.around(100*total/np.size(sigma_mask), 2)
-   
-    area_dat = ['255', str(total.astype(int)), '100%', str(ratio)+'%']
-    sys.stdout.write("\t".join(area_dat) + '\n')
+        if args.area:
+            # counts the ratio of white pixels
+            total = np.sum(sigma_mask)/255.
+            ratio = np.around(100*total/np.size(sigma_mask), 2)
+
+            area_dat = ['255', str(total.astype(int)), '100%', str(ratio)+'%']
+            sys.stdout.write("\t".join(area_dat) + '\n')
+
+except Exception:
+     print("encountered an error!")
+     print(traceback.format_exc())
