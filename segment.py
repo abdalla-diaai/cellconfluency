@@ -54,15 +54,19 @@ def img_layer(img_orig, img_segm):
 ###########################################################
 # Argument parser
 p = argparse.ArgumentParser(description='segmentation')
-# to take more than on argument in the command line
+# images to be processed. can take more than on argument in the command line
 p.add_argument('-i', action='store', dest='inp', type=str, nargs='+',
                required=True, help='input image path')
+# if output images need to be stored, to visualise threshold settings
 p.add_argument('-o', action='store', dest='outp', type=str, 
                help='output image path')
+# to adjust image threshold,numerical number
 p.add_argument('-S', action='store', dest='thr', type=int, 
                default=2, help='stddev threshold value')
+# to calculate area of confulency
 p.add_argument('-area', action='store_true', dest='area', default=False,
                help='calculates white pixel ratio')
+# to test code on subset of images?
 p.add_argument('-test', action='store', dest='test', type=str, 
                help='layered image path')
 args = p.parse_args()
