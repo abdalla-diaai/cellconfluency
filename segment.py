@@ -29,8 +29,9 @@ def stddev_thresh(img_in, ws, thr):
 	
 	
 def clust_mask(img, std_thr, size):
-	
-	thr_bool = std_thr.astype(np.bool)
+	# AttributeError: module 'numpy' has no attribute 'bool'.
+	# `np.bool` was a deprecated alias for the builtin `bool`. 	
+	thr_bool = std_thr.astype(np.bool_)
 	thr_rem = morphology.remove_small_objects(thr_bool, min_size=size, connectivity=2)
 	thr_rem = morphology.remove_small_objects(~thr_rem, min_size=size, connectivity=2)
 	thr_rem = ((~thr_rem).astype(np.uint8)*255)
